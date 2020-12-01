@@ -1,9 +1,12 @@
 import * as https from 'https';
 import * as querystring from 'querystring';
-import * as md5 from 'md5';
+import md5 = require('md5');
 import { appId, appSecret } from './private';
 
-const errMap = {
+type ErrorMap = {
+  [key: string]: string | undefined;
+};
+const errMap: ErrorMap = {
   52000: '成功',
   52001: '请求超时',
   52002: '系统错误',
@@ -17,10 +20,9 @@ const errMap = {
   58001: '译文语言方向不支持',
   58002: '服务当前已关闭',
   90107: '认证未通过或未生效',
-  unknown: '服务器繁忙',
 };
 
-export const translate = (word) => {
+export const translate = (word: string) => {
   const salt = Math.random();
   const sign = md5(appId + word + salt + appSecret);
   let from, to;
@@ -52,7 +54,7 @@ export const translate = (word) => {
   };
 
   const request = https.request(options, (response) => {
-    let chunks = [];
+    let chunks: Buffer[] = [];
     response.on('data', (chunk) => {
       chunks.push(chunk);
     });
@@ -70,10 +72,8 @@ export const translate = (word) => {
       };
       const object: BaiduResult = JSON.parse(string);
 
-      if (object.error_code in errMap) {
-        console.log(
-          '错误:' + errMap[object.error_code] || '错误:' + errMap.unknown
-        );
+      if (object.error_code && object.error_code in errMap) {
+        console.log('错误:' + errMap[object.error_code]);
         process.exit(2);
       } else {
         object.trans_result.map((result) => {

@@ -1,7 +1,13 @@
 {
   "name": "vio-translate",
-  "version": "0.0.1",
-  "main": "index.js",
+  "version": "0.0.2",
+  "main": "dist/main.js",
+  "bin": {
+    "vtrs": "dist/cli.js"
+  },
+  "files": [
+    "dist/**/*.js"
+  ],
   "scripts": {
     "start": "tsnd src/main.ts"
   },
